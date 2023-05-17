@@ -16,6 +16,7 @@ from sklearn.preprocessing import MinMaxScaler
 from torch import nn
 
 dir_out = os.path.normpath('E:/rafael/data/AI4Arctic/results/v1')
+dpi = 800
 
 def _plot_input_rgb(scene, fname, fignumber):
     input_features = ['nersc_sar_primary',
@@ -51,7 +52,7 @@ def _plot_input_rgb(scene, fname, fignumber):
     ax.set_yticks([])
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-rgb.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-rgb.jpg'), dpi=dpi)
     plt.close('all')
 
 def _crop_EE(da, east, north, crop_len):
@@ -103,7 +104,7 @@ def _plot_EE_rgb(fname, fignumber, east=None, north=None, crop_len=None):
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
     plt.close('all')
 
 def _plot_input(scene, fname, fignumber):
@@ -134,7 +135,7 @@ def _plot_input(scene, fname, fignumber):
         ax.set_yticks([])
         fig.tight_layout()
 
-        fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=600)
+        fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=dpi)
         plt.close('all')
 
 
@@ -166,7 +167,7 @@ def _plot_mean_or_entropy(scene, fname, fignumber, lab='entropy'):
     ax.set_yticks([])
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=dpi)
     plt.close('all')
 
 def _plot_EE_prob_or_entropy(fname, fignumber, east=None, north=None, crop_len=None):
@@ -202,7 +203,7 @@ def _plot_EE_prob_or_entropy(fname, fignumber, east=None, north=None, crop_len=N
     ax.axis('off')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
     plt.close('all')
 
 def _get_binary_info(lab):
@@ -268,7 +269,7 @@ def _plot_label(scene, fname, fignumber, lab='binary'):
     ax.set_yticks([])
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=dpi)
     plt.close('all')
 
 def _plot_EE_icetype(fname, fignumber, east=None, north=None, crop_len=None):
@@ -318,7 +319,7 @@ def _plot_EE_icetype(fname, fignumber, east=None, north=None, crop_len=None):
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
     plt.close('all')
 
 def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_rect=False, lab='binary'):
@@ -386,7 +387,7 @@ def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_re
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=600)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
     plt.close('all')
 
 def _predict_single(test_file, model_path):
@@ -514,78 +515,102 @@ def fig11():
     fname = 'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/pred-entropy-20180116t075430.tif'
     _plot_EE_prob_or_entropy(fname, '11-c')
 
-
 def fig12():
-    fname = 'E:/rafael/data/Extreme_Earth/denoised_resampled/20180417t074606.tif'
-    _plot_EE_rgb(fname, '12-a')
 
-    fname = 'E:/rafael/data/Extreme_Earth/labels_rasterized/SA_wland/seaice_s1_20180417t074606-SA_wland.tif'
-    _plot_EE_icetype(fname, '12-b')
+    east, north = -502_600,-1_722_400
+    crop_len = 150_000
 
-    fname = 'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-entropy-20180417t074606.tif'
-    _plot_EE_prob_or_entropy(fname, '12-c')
+    figtag = '20180911t175548'
+    fignumber = 12
 
-    fname = 'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-ensemble/pred-entropy-20180417t074606.tif'
-    _plot_EE_prob_or_entropy(fname, '12-d')
+    fname = f'E:/rafael/data/Extreme_Earth/denoised_resampled/{figtag}.tif'
+    _plot_EE_rgb(fname, f'{fignumber}-a', east, north, crop_len)
+
+    fname = f'E:/rafael/data/Extreme_Earth/labels_rasterized/SA_wland/seaice_s1_{figtag}-SA_wland.tif'
+    _plot_EE_icetype(fname, f'{fignumber}-b', east, north, crop_len)
+
+    fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-entropy-{figtag}.tif'
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-c', east, north, crop_len)
+
+    # have to remake error map for figure 10:
+    fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
+    _plot_EE_label(fname, '10-09', east, north, crop_len, as_rect=True, lab='corrects')
+
 
 def fig13():
+    fignumber = 13
+    fname = 'E:/rafael/data/Extreme_Earth/denoised_resampled/20180417t074606.tif'
+    _plot_EE_rgb(fname, f'{fignumber}-a')
+
+    fname = 'E:/rafael/data/Extreme_Earth/labels_rasterized/SA_wland/seaice_s1_20180417t074606-SA_wland.tif'
+    _plot_EE_icetype(fname, f'{fignumber}-b')
+
+    fname = 'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-entropy-20180417t074606.tif'
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-c')
+
+    fname = 'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-ensemble/pred-entropy-20180417t074606.tif'
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-d')
+
+def fig14():
     east, north = -368297,-1646547
     crop_len = 80_000
 
     figtag = '20180515t174633'
+    fignumber = 14
 
     fname = f'E:/rafael/data/Extreme_Earth/denoised_resampled/{figtag}.tif'
-    _plot_EE_rgb(fname, '13-a', east, north, crop_len)
+    _plot_EE_rgb(fname, f'{fignumber}-a', east, north, crop_len)
 
     fname = f'E:/rafael/data/Extreme_Earth/labels_rasterized/SA_wland/seaice_s1_{figtag}-SA_wland.tif'
-    _plot_EE_icetype(fname, '13-b', east, north, crop_len)
+    _plot_EE_icetype(fname, f'{fignumber}-b', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '13-c', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-c', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-mean-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, 13, east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/corrects-{figtag}.tif'
-    _plot_EE_label(fname, '13-d', east, north, crop_len, lab='corrects')
+    _plot_EE_label(fname, f'{fignumber}-d', east, north, crop_len, lab='corrects')
 
     # have to remake error map for figure 10:
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
     _plot_EE_label(fname, '10-05', east, north, crop_len, as_rect=True, lab='corrects')
 
 
-def fig14():
+def fig15():
     east, north = -393_000,-1_479_000
     crop_len = 100_000
 
     figtag = '20180814t075344'
+    fignumber = 15
 
     fname = f'E:/rafael/data/Extreme_Earth/denoised_resampled/{figtag}.tif'
-    _plot_EE_rgb(fname, '14-a', east, north, crop_len)
+    _plot_EE_rgb(fname, f'{fignumber}-a', east, north, crop_len)
 
     fname = f'E:/rafael/data/Extreme_Earth/labels_rasterized/SA_wland/seaice_s1_{figtag}-SA_wland.tif'
-    _plot_EE_icetype(fname, '14-b', east, north, crop_len)
+    _plot_EE_icetype(fname, f'{fignumber}-b', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
-    _plot_EE_label(fname, '14-c', east, north, crop_len, lab='corrects')
+    _plot_EE_label(fname, f'{fignumber}-c', east, north, crop_len, lab='corrects')
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '14-d', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-d', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-ensemble/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '14-e', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-e', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '14-f', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-f', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/dice/EE-dropout/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '14-g', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-g', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/dice/EE-ensemble/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '14-h', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-h', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/dice/ensemble_and_dropout_EE/pred-entropy-{figtag}.tif'
-    _plot_EE_prob_or_entropy(fname, '14-i', east, north, crop_len)
+    _plot_EE_prob_or_entropy(fname, f'{fignumber}-i', east, north, crop_len)
 
     # have to remake error map for figure 10:
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
@@ -593,16 +618,17 @@ def fig14():
 
 
 if __name__ == '__main__':
-    fig1and2()
-    # # fig 3 is model architecture sketched on powerpoint
-    # # fig 4 comes out of summaries.py
-    fig5() 
-    fig6()
-    # # fig 7 comes out of confusion matrix in evaluate.py 
-    # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
-    # # fig 10 comes out of plot_raster.py (error maps)
-    fig11()
+    # fig1and2()
+    # # # fig 3 is model architecture sketched on powerpoint
+    # # # fig 4 comes out of summaries.py
+    # fig5() 
+    # fig6()
+    # # # fig 7 comes out of confusion matrix in evaluate.py 
+    # # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
+    # # # fig 10 comes out of plot_raster.py (error maps)
+    # fig11()
     fig12()
     fig13()
     fig14()
+    fig15()
 
