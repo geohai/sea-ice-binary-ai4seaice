@@ -102,10 +102,10 @@ def full_loss_decay():
             ax.set_xlabel('Epoch')
         
         fig.tight_layout()
-        fig.savefig(os.path.join(root_dir, 'training_metrics.tiff'), dpi=500)
+        fig.savefig(os.path.join(root_dir, 'training_metrics.pdf'), dpi=500)
 
 
 if __name__ == '__main__':
     
-    #full_loss_decay()
-    metric_summary()
+    full_loss_decay()
+    #metric_summary()

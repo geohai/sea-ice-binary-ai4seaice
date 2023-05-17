@@ -16,7 +16,8 @@ from sklearn.preprocessing import MinMaxScaler
 from torch import nn
 
 dir_out = os.path.normpath('E:/rafael/data/AI4Arctic/results/v1')
-dpi = 800
+dpi = 500
+file_format = 'png'
 
 def _plot_input_rgb(scene, fname, fignumber):
     input_features = ['nersc_sar_primary',
@@ -52,7 +53,7 @@ def _plot_input_rgb(scene, fname, fignumber):
     ax.set_yticks([])
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-rgb.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-rgb.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _crop_EE(da, east, north, crop_len):
@@ -67,7 +68,7 @@ def _crop_EE(da, east, north, crop_len):
 def _plot_EE_rgb(fname, fignumber, east=None, north=None, crop_len=None):
     
     da = rioxarray.open_rasterio(fname, masked=True)
-    dlabel, cmap_label = _get_ice_mask(fname)
+    dlabel, cmap_label = _get_ice_mask(fname, da)
 
     if east and north:
         # use masks
@@ -104,7 +105,7 @@ def _plot_EE_rgb(fname, fignumber, east=None, north=None, crop_len=None):
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _plot_input(scene, fname, fignumber):
@@ -135,7 +136,7 @@ def _plot_input(scene, fname, fignumber):
         ax.set_yticks([])
         fig.tight_layout()
 
-        fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=dpi)
+        fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.{file_format}'), dpi=dpi)
         plt.close('all')
 
 
@@ -167,13 +168,13 @@ def _plot_mean_or_entropy(scene, fname, fignumber, lab='entropy'):
     ax.set_yticks([])
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _plot_EE_prob_or_entropy(fname, fignumber, east=None, north=None, crop_len=None):
 
     da = rioxarray.open_rasterio(fname, masked=True)
-    dlabel, cmap_label = _get_ice_mask(fname)
+    dlabel, cmap_label = _get_ice_mask(fname, da)
 
     if east and north:
         # use masks
@@ -203,7 +204,7 @@ def _plot_EE_prob_or_entropy(fname, fignumber, east=None, north=None, crop_len=N
     ax.axis('off')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _get_binary_info(lab):
@@ -220,7 +221,7 @@ def _get_binary_info(lab):
 
     return BINARY_GROUPS, BINARY_LEVELS, BINARY_COLORS
 
-def _get_ice_mask(fname):
+def _get_ice_mask(fname, da):
     root_label = os.path.normpath('E:/rafael/data/Extreme_Earth/labels_rasterized/poly_type_wland')
     label_tag = 'poly_type'
     num_classes = 1
@@ -228,6 +229,11 @@ def _get_ice_mask(fname):
     # this file should be associated with a label:
     label_fname = os.path.join(root_label, f'seaice_s1_{Path(fname).stem.split("-")[-1]}-{label_tag}.tif')
     dlabel = rioxarray.open_rasterio(label_fname, masked=True)
+
+    # remove land pixels on th  e input data
+    land_mask = np.broadcast_to(dlabel.data == num_classes+1, da.data.shape)
+    da.data[land_mask] = np.nan
+    
     dlabel.data[dlabel.data > num_classes] = num_classes
     cmap_label = ListedColormap([(255/255, 255/255, 255/255)])
 
@@ -269,7 +275,7 @@ def _plot_label(scene, fname, fignumber, lab='binary'):
     ax.set_yticks([])
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}-{lab}.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _plot_EE_icetype(fname, fignumber, east=None, north=None, crop_len=None):
@@ -319,7 +325,7 @@ def _plot_EE_icetype(fname, fignumber, east=None, north=None, crop_len=None):
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_rect=False, lab='binary'):
@@ -340,7 +346,7 @@ def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_re
     BINARY_COLORS = ListedColormap(BINARY_COLORS)
 
     da = rioxarray.open_rasterio(fname, masked=True)
-    dlabel, cmap_label = _get_ice_mask(fname)
+    dlabel, cmap_label = _get_ice_mask(fname, da)
 
     if east and north:
         if not as_rect:
@@ -387,7 +393,7 @@ def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_re
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.jpg'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi)
     plt.close('all')
 
 def _predict_single(test_file, model_path):
@@ -479,7 +485,7 @@ def fig5():
 
     ##################### plot input features
     _plot_input(scene, test_file, fignumber)
-    _plot_input_rgb(scene, test_file, fignumber)
+    _plot_input_rgb(scene, test_file, f'{fignumber}-a')
 
     ##################### plot labels and corrects
     _plot_label(scene, test_file, fignumber, 'binary')
@@ -618,15 +624,15 @@ def fig15():
 
 
 if __name__ == '__main__':
-    # fig1and2()
-    # # # fig 3 is model architecture sketched on powerpoint
-    # # # fig 4 comes out of summaries.py
-    # fig5() 
-    # fig6()
-    # # # fig 7 comes out of confusion matrix in evaluate.py 
-    # # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
-    # # # fig 10 comes out of plot_raster.py (error maps)
-    # fig11()
+    fig1and2()
+    # # fig 3 is model architecture sketched on powerpoint
+    # # fig 4 comes out of summaries.py (training_metrics.pdf)
+    fig5() 
+    fig6()
+    # # fig 7 comes out of confusion matrix in evaluate.py 
+    # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
+    # # fig 10 comes out of plot_raster.py (error maps)
+    fig11()
     fig12()
     fig13()
     fig14()
