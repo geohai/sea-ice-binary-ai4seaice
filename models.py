@@ -152,6 +152,6 @@ class ResNetASPP(pl.LightningModule):
         if isinstance(sch, torch.optim.lr_scheduler.ReduceLROnPlateau):
             sch.step(self.trainer.callback_metrics["val_loss"])   
 
-        if self.hparams.frozen_start and (sch.optimizer.param_groups[0]['lr'] < self.hparams.lr):
-            for param in self.encoder.parameters():
-                param.requires_grad = True                    
+            if self.hparams.frozen_start and (sch.optimizer.param_groups[0]['lr'] < self.hparams.lr):
+                for param in self.encoder.parameters():
+                    param.requires_grad = True                    
