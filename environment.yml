@@ -1,4 +1,4 @@
-name: ice
+name: ice-binary
 channels:
   - pytorch
   - conda-forge
