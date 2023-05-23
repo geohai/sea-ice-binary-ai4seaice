@@ -6,6 +6,7 @@ channels:
   - defaults
 dependencies:
   - gdal=3.5.1
+  - h5netcdf=1.1.0
   - matplotlib=3.5.2
   - numpy=1.23.1
   - pandas=1.4.3
