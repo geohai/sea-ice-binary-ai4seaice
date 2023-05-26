@@ -13,10 +13,10 @@ import xarray as xr
 from torch import nn
 from tqdm.auto import tqdm
 
-
-#https://gist.github.com/Mlawrence95/f697aa939592fa3ef465c05821e1deed
 def confusion_matrix(df: pd.DataFrame, col1: str, col2: str):
     """
+    from: #https://gist.github.com/Mlawrence95/f697aa939592fa3ef465c05821e1deed
+
     Given a dataframe with at least
     two categorical columns, create a 
     confusion matrix of the count of the columns
@@ -229,5 +229,5 @@ def compare_ai4arctic():
 
 
 if __name__ == '__main__':
-    #compare_EE()
+    compare_EE()
     compare_ai4arctic()
