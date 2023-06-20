@@ -328,12 +328,13 @@ def _plot_EE_icetype(fname, fignumber, east=None, north=None, crop_len=None):
     fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi)
     plt.close('all')
 
-def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_rect=False, lab='binary'):
+def _plot_EE_label(fname, fignumber, month=None, east=None, north=None, crop_len=None, as_rect=False, lab='binary'):
     """Plots EE labels: binary or errors
 
     Args:
-        fname (str): path to raster file
-        fignumber (str): figure number tag
+        fname (str): path to raster file.
+        fignumber (str): figure number tag.
+        month (str, optional): month name to add text indication.
         east (int, optional): east coordinate to crop or locate rectangle. Defaults to None.
         north (int, optional): north coordinate to crop or locate rectangle. Defaults to None.
         crop_len (float, optional): crop or rectangle size. Defaults to None.
@@ -371,13 +372,18 @@ def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_re
     dlabel[0].plot.contour(ax=ax, 
                         cmap=cmap_label,
                         vmax=1,
-                        linewidths=0.6, 
+                        linewidths=0.8, 
                         linestyles = 'dotted'
                         )
     
     cbar_ax.set_yticks(np.array(list(BINARY_GROUPS.keys()))+0.5)                              
     cbar_ax.set_yticklabels(list(BINARY_GROUPS.values()), rotation=90)
     cbar_ax.set_ylabel('')
+
+    if month:
+        ax.text(0.1, 0.0, month, horizontalalignment='center', verticalalignment='center', transform=ax.transAxes, fontsize=14)
+        cbar_ax.cla()
+        cbar_ax.axis('off')
 
     if as_rect:
         ax.add_patch(Rectangle((east-crop_len/2, north-crop_len/2), crop_len, crop_len,
@@ -387,13 +393,16 @@ def _plot_EE_label(fname, fignumber, east=None, north=None, crop_len=None, as_re
              lw=1))
         cbar_ax.cla()
         cbar_ax.axis('off')
+    
+    if month or as_rect:
+        cbar_ax.remove()
 
     ax.set_aspect('equal')
     ax.axis('off')
     ax.set_title('')
     fig.tight_layout()
 
-    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi)
+    fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{Path(fname).stem}.{file_format}'), dpi=dpi, bbox_inches='tight')
     plt.close('all')
 
 def _predict_single(test_file, model_path):
@@ -511,6 +520,29 @@ def fig6():
     _plot_label(scene, test_file, f'{fignumber}-e', 'pred-binary')
     _plot_label(scene, test_file, f'{fignumber}-f', 'corrects')
 
+def fig10():
+    fignumber = 10
+
+    figtag_dict = {'01': {'month': 'January',    'figtag': '20180116t075430'},
+                   '02': {'month': 'February',   'figtag': '20180213t175444'},
+                   '03': {'month': 'March',      'figtag': '20180313t181225'},
+                   '04': {'month': 'April',      'figtag': '20180417t074606'},
+                   '05': {'month': 'May',        'figtag': '20180515t174633'},
+                   '06': {'month': 'June',       'figtag': '20180612t180423'},
+                   '07': {'month': 'July',       'figtag': '20180717t073809'},
+                   '08': {'month': 'August',     'figtag': '20180814t075344'},
+                   '09': {'month': 'September', 'figtag': '20180911t175548'},
+                   '10': {'month': 'October',    'figtag': '20181016t072958'},
+                   '11': {'month': 'November',   'figtag': '20181113t074529'},
+                   '12': {'month': 'December',   'figtag': '20181218t075437'},
+                   }
+
+    for idx, figinfo in figtag_dict.items():
+        figtag = figinfo['figtag']
+        month = figinfo['month']
+        fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
+        _plot_EE_label(fname, f'{fignumber}-{idx}', month=month, lab='corrects')
+
 def fig11():
     fname = 'E:/rafael/data/Extreme_Earth/denoised_resampled/20180116t075430.tif'
     _plot_EE_rgb(fname, '11-a')
@@ -540,7 +572,7 @@ def fig12():
 
     # have to remake error map for figure 10:
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
-    _plot_EE_label(fname, '10-09', east, north, crop_len, as_rect=True, lab='corrects')
+    _plot_EE_label(fname, '10-09', 'September', east, north, crop_len, as_rect=True, lab='corrects')
 
 
 def fig13():
@@ -577,11 +609,11 @@ def fig14():
     _plot_EE_prob_or_entropy(fname, f'{fignumber}', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/corrects-{figtag}.tif'
-    _plot_EE_label(fname, f'{fignumber}-d', east, north, crop_len, lab='corrects')
+    _plot_EE_label(fname, f'{fignumber}-d', None, east, north, crop_len, lab='corrects')
 
     # have to remake error map for figure 10:
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
-    _plot_EE_label(fname, '10-05', east, north, crop_len, as_rect=True, lab='corrects')
+    _plot_EE_label(fname, '10-05', 'May', east, north, crop_len, as_rect=True, lab='corrects')
 
 
 def fig15():
@@ -598,7 +630,7 @@ def fig15():
     _plot_EE_icetype(fname, f'{fignumber}-b', east, north, crop_len)
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
-    _plot_EE_label(fname, f'{fignumber}-c', east, north, crop_len, lab='corrects')
+    _plot_EE_label(fname, f'{fignumber}-c', None, east, north, crop_len, lab='corrects')
 
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/EE-dropout/pred-entropy-{figtag}.tif'
     _plot_EE_prob_or_entropy(fname, f'{fignumber}-d', east, north, crop_len)
@@ -620,10 +652,11 @@ def fig15():
 
     # have to remake error map for figure 10:
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
-    _plot_EE_label(fname, '10-08', east, north, crop_len, as_rect=True, lab='corrects')
+    _plot_EE_label(fname, '10-08', 'August', east, north, crop_len, as_rect=True, lab='corrects')
 
 
 if __name__ == '__main__':
+    fig10()
     fig1and2()
     # # fig 3 is model architecture sketched on powerpoint
     # # fig 4 comes out of summaries.py (training_metrics.pdf)
@@ -631,7 +664,6 @@ if __name__ == '__main__':
     fig6()
     # # fig 7 comes out of confusion matrix in evaluate.py 
     # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
-    # # fig 10 comes out of plot_raster.py (error maps)
     fig11()
     fig12()
     fig13()
