@@ -381,7 +381,7 @@ def _plot_EE_label(fname, fignumber, month=None, east=None, north=None, crop_len
     cbar_ax.set_ylabel('')
 
     if month:
-        ax.text(0.1, 0.0, month, horizontalalignment='center', verticalalignment='center', transform=ax.transAxes, fontsize=14)
+        ax.text(0.1, 0.0, month, horizontalalignment='center', verticalalignment='center', transform=ax.transAxes, fontsize=14, backgroundcolor='white')
         cbar_ax.cla()
         cbar_ax.axis('off')
 
