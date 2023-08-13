@@ -685,26 +685,30 @@ def fig16():
             elif loss == 'cross-entropy':
                 fname = os.path.join(base_dir, loss, f'EE-ce-1', f'pred-mean-{result}.tif')
             da = rioxarray.open_rasterio(fname, masked=True)
-            count, bin = np.histogram(da[1].values.ravel(), range=(0,1))
+            count, bin = np.histogram(da[1].values.ravel(), range=(0,1), bins=20)
 
             bin = bin[:-1]
+            bin[-1]=1
+            n_vals = len(bin)
             results_dict['count'] += list(count)
             results_dict['bin'] += list(bin)
-            results_dict['Scene'] += [month for _ in bin]
-            results_dict['type'] += ['single' for _ in bin]
-            results_dict['Loss'] += [loss for _ in bin]
+            results_dict['Scene'] += [month] * n_vals
+            results_dict['type'] += ['single'] * n_vals
+            results_dict['Loss'] += [loss] * n_vals
             
             ##ensemble
             fname = os.path.join(base_dir, loss, 'EE-ensemble', f'pred-mean-{result}.tif')
             da = rioxarray.open_rasterio(fname, masked=True)
-            count, bin = np.histogram(da[1].values.ravel(), range=(0,1))
+            count, bin = np.histogram(da[1].values.ravel(), range=(0,1), bins=20)
 
             bin = bin[:-1]
+            bin[-1]=1
+            n_vals = len(bin)
             results_dict['count'] += list(count)
             results_dict['bin'] += list(bin)
-            results_dict['Scene'] += [month for _ in bin]
-            results_dict['type'] += ['ensemble' for _ in bin]
-            results_dict['Loss'] += [loss for _ in bin]
+            results_dict['Scene'] += [month] * n_vals
+            results_dict['type'] += ['ensemble'] * n_vals
+            results_dict['Loss'] += [loss] * n_vals
 
     df = pd.DataFrame(results_dict)
 
@@ -724,8 +728,9 @@ def fig16():
             )
             ax.set_title(loss_df['Loss'].unique().item())
             ax.set_xbound(0, 1)
-            ax.set_ybound(4.5, 7.5)
+            ax.set_ybound(4.0, 7.5)
 
+            fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{idx+1}'), dpi=dpi)
 
 if __name__ == '__main__':
     # fig10()
