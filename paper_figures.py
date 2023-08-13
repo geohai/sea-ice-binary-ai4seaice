@@ -14,6 +14,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.stats import entropy
 from sklearn.preprocessing import MinMaxScaler
 from torch import nn
+import seaborn as sns
+
 
 dir_out = os.path.normpath('E:/rafael/data/AI4Arctic/results/v1')
 dpi = 500
@@ -654,19 +656,90 @@ def fig15():
     fname = f'E:/rafael/data/AI4Arctic/results/v1/cross-entropy/ensemble_and_dropout_EE/corrects-{figtag}.tif'
     _plot_EE_label(fname, '10-08', 'August', east, north, crop_len, as_rect=True, lab='corrects')
 
+def fig16():
+    fignumber = 16
+
+    month_dict = { 'January': '20180116t075430',
+                   'February': '20180213t175444',
+                   'March': '20180313t181225',
+                   'April': '20180417t074606',
+                   'May': '20180515t174633',
+                   'June': '20180612t180423',
+                   'July': '20180717t073809',
+                   'August': '20180814t075344',
+                   'September': '20180911t175548',
+                   'October': '20181016t072958',
+                   'November': '20181113t074529',
+                   'December': '20181218t075437',
+                   }
+
+    base_dir = os.path.normpath('E:/rafael/data/AI4Arctic/results/v1/')
+
+    results_dict = {'count': [], 'bin': [], 'Scene': [], 'type':[], 'Loss':[]}
+
+    for loss in ['dice', 'cross-entropy']:
+        for month, result in month_dict.items():
+            ##single
+            if loss == 'dice':
+                fname = os.path.join(base_dir, loss, f'EE-{loss}-1', f'pred-mean-{result}.tif')
+            elif loss == 'cross-entropy':
+                fname = os.path.join(base_dir, loss, f'EE-ce-1', f'pred-mean-{result}.tif')
+            da = rioxarray.open_rasterio(fname, masked=True)
+            count, bin = np.histogram(da[1].values.ravel(), range=(0,1))
+
+            bin = bin[:-1]
+            results_dict['count'] += list(count)
+            results_dict['bin'] += list(bin)
+            results_dict['Scene'] += [month for _ in bin]
+            results_dict['type'] += ['single' for _ in bin]
+            results_dict['Loss'] += [loss for _ in bin]
+            
+            ##ensemble
+            fname = os.path.join(base_dir, loss, 'EE-ensemble', f'pred-mean-{result}.tif')
+            da = rioxarray.open_rasterio(fname, masked=True)
+            count, bin = np.histogram(da[1].values.ravel(), range=(0,1))
+
+            bin = bin[:-1]
+            results_dict['count'] += list(count)
+            results_dict['bin'] += list(bin)
+            results_dict['Scene'] += [month for _ in bin]
+            results_dict['type'] += ['ensemble' for _ in bin]
+            results_dict['Loss'] += [loss for _ in bin]
+
+    df = pd.DataFrame(results_dict)
+
+    df['log(count)'] = np.log10(df['count'])
+    
+    list_df_loss = [df.loc[df['Loss'] == 'dice'], 
+                    df.loc[df['Loss'] == 'cross-entropy']]
+
+    for idx, loss_df in enumerate(list_df_loss):
+        with sns.axes_style("whitegrid"):
+            fig, ax = plt.subplots(figsize=(4.5,4.5), ncols=1) 
+            g = sns.lineplot(
+                data=loss_df.loc[loss_df['Scene'].isin(['May', 'August', 'September', 'November'])],
+                x="bin", y="log(count)", hue="Scene", style='type',
+                #palette=sns.color_palette("husl", 12),
+                ax=ax,
+            )
+            ax.set_title(loss_df['Loss'].unique().item())
+            ax.set_xbound(0, 1)
+            ax.set_ybound(4.5, 7.5)
+
 
 if __name__ == '__main__':
-    fig10()
-    fig1and2()
-    # # fig 3 is model architecture sketched on powerpoint
-    # # fig 4 comes out of summaries.py (training_metrics.pdf)
-    fig5() 
-    fig6()
-    # # fig 7 comes out of confusion matrix in evaluate.py 
-    # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
-    fig11()
-    fig12()
-    fig13()
-    fig14()
-    fig15()
+    # fig10()
+    # fig1and2()
+    # # # fig 3 is model architecture sketched on powerpoint
+    # # # fig 4 comes out of summaries.py (training_metrics.pdf)
+    # fig5() 
+    # fig6()
+    # # # fig 7 comes out of confusion matrix in evaluate.py 
+    # # # figs 8 and 9 come out of results in evaluate.py (ensemble dice and ensemble cross-entropy)
+    # fig11()
+    # fig12()
+    # fig13()
+    # fig14()
+    # fig15()
+    fig16()
 
