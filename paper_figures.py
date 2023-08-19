@@ -15,6 +15,7 @@ from scipy.stats import entropy
 from sklearn.preprocessing import MinMaxScaler
 from torch import nn
 import seaborn as sns
+from tqdm.auto import tqdm
 
 
 dir_out = os.path.normpath('E:/rafael/data/AI4Arctic/results/v1')
@@ -731,6 +732,76 @@ def fig16():
             ax.set_ybound(4.0, 7.5)
 
             fig.savefig(os.path.join(dir_out, f'fig{fignumber}-{idx+1}'), dpi=dpi)
+        plt.close('all')
+
+def fig17():
+
+    fignumber = 17
+
+    month_dict = { 'January': '20180116t075430',
+                   'February': '20180213t175444',
+                   'March': '20180313t181225',
+                   'April': '20180417t074606',
+                   'May': '20180515t174633',
+                   'June': '20180612t180423',
+                   'July': '20180717t073809',
+                   'August': '20180814t075344',
+                   'September': '20180911t175548',
+                   'October': '20181016t072958',
+                   'November': '20181113t074529',
+                   'December': '20181218t075437',
+                   }
+
+    base_dir = os.path.normpath('E:/rafael/data/AI4Arctic/results/v1/')
+ 
+    results_dict =  {'Scene': [], 
+                    'Loss':[],
+                    'type' : [],
+                    'Mean entropy' : [],
+                    'Mean accuracy' : [],
+                    'Entropy THR': []}
+    entropy_thresholds = [0.01, 0.08, 0.29, 0.47]
+
+    for loss in ['dice', 'cross-entropy']:
+        for ens_type in tqdm(['dropout', 'ensemble']):
+            for month, result in month_dict.items():
+                fname = os.path.join(base_dir, loss, f'EE-{ens_type}', f'pred-entropy-{result}.tif')
+                da_entr = rioxarray.open_rasterio(fname, masked=True)
+
+                fname = os.path.join(base_dir, loss, f'EE-{ens_type}', f'corrects-{result}.tif')
+                da_err = rioxarray.open_rasterio(fname, masked=True)
+
+                for thresh in entropy_thresholds:
+                    mask = da_entr.values>=thresh
+                    # calculate mean entropy 
+                    # calculate mean accuracy
+                
+                    avg_entropy = np.nanmean(da_entr.values[mask].ravel())
+                    avg_acc = np.nansum(da_err.values[mask])/((~np.isnan(da_err.values)).sum())
+
+                    results_dict['Mean entropy'] += [avg_entropy]
+                    results_dict['Mean accuracy'] += [avg_acc]
+                    results_dict['Entropy THR'] += [thresh]
+                    results_dict['Scene'] += [month] 
+                    results_dict['type'] += [ens_type]
+                    results_dict['Loss'] += [loss]
+            
+            
+    df = pd.DataFrame(results_dict)
+
+    with sns.axes_style("whitegrid"):
+        g = sns.FacetGrid(df.loc[df['Scene'].isin(['May', 'August', 'September', 'November'])], 
+                          col="type", 
+                          row="Loss", 
+                          legend_out=True,
+                          )
+        g.map_dataframe(sns.scatterplot, x="Mean entropy", y="Mean accuracy", hue="Scene", style='Entropy THR')
+        g.add_legend()
+        g.fig.set_size_inches(7, 4)
+        g.savefig(os.path.join(dir_out, f'fig{fignumber}'), dpi=dpi)
+    plt.close('all')
+
+
 
 if __name__ == '__main__':
     # fig10()
@@ -746,5 +817,6 @@ if __name__ == '__main__':
     # fig13()
     # fig14()
     # fig15()
-    fig16()
+    # fig16()
+    fig17()
 
