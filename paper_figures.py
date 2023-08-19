@@ -708,7 +708,7 @@ def fig16():
             results_dict['count'] += list(count)
             results_dict['bin'] += list(bin)
             results_dict['Scene'] += [month] * n_vals
-            results_dict['type'] += ['ensemble'] * n_vals
+            results_dict['type'] += ['Ens'] * n_vals
             results_dict['Loss'] += [loss] * n_vals
 
     df = pd.DataFrame(results_dict)
@@ -728,6 +728,7 @@ def fig16():
                 ax=ax,
             )
             ax.set_title(loss_df['Loss'].unique().item())
+            ax.set_xlabel('Probability bin')
             ax.set_xbound(0, 1)
             ax.set_ybound(4.0, 7.5)
 
@@ -788,6 +789,7 @@ def fig17():
             
             
     df = pd.DataFrame(results_dict)
+    df['type'] = df['type'].replace({'dropout':'MCD', 'ensemble':'Ens'})
 
     with sns.axes_style("whitegrid"):
         g = sns.FacetGrid(df.loc[df['Scene'].isin(['May', 'August', 'September', 'November'])], 
@@ -817,6 +819,6 @@ if __name__ == '__main__':
     # fig13()
     # fig14()
     # fig15()
-    # fig16()
+    fig16()
     fig17()
 
