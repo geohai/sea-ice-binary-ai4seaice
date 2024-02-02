@@ -4,7 +4,7 @@
 ## References
 Please cite us!
 
-The code in this repository was the main source for a sudy published as a [peer-reviewed paper](https://ieeexplore.ieee.org/abstract/document/10312772) (or the [preprint](https://eartharxiv.org/repository/view/6568/)). The bibtex entry for the paper is below:
+The code in this repository was the main source for a sudy published as a [peer-reviewed paper](https://ieeexplore.ieee.org/abstract/document/10312772) titled **Model Ensemble With Dropout for Uncertainty Estimation in Sea Ice Segmentation Using Sentinel-1 SAR**. The [preprint](https://eartharxiv.org/repository/view/6568/) is also available. The bibtex entry for the paper is below:
 
 ```bibtex
 @ARTICLE{sea_ice_unc_2023,
@@ -29,7 +29,7 @@ The `bibtex` entry for the publications above is listed below:
 
 ```bibtex
 @ARTICLE{enhancing_sea_ice_2023,
-    author = {Rafael Pires de Lima, Behzad Vahedi, Nick Hughes, Andrew P. Barrett, Walter Meier and Morteza Karimzadeh},
+    author = {Pires de Lima, Rafael and Vahedi, Behzad and Hughes, Nick and Barrett, Andrew P. and Meier, Walter and Karimzadeh, Morteza},
     title = {Enhancing sea ice segmentation in Sentinel-1 images with atrous convolutions},
     journal = {International Journal of Remote Sensing},
     volume = {44},
@@ -43,7 +43,7 @@ The `bibtex` entry for the publications above is listed below:
 
 ```bibtex
 @INPROCEEDINGS{comparison_sea_ice_2023,
-  author={de Lima, Rafael Pires and Vahedi, Behzad and Karimzadeh, Morteza},
+  author={Pires de Lima, Rafael and Vahedi, Behzad and Karimzadeh, Morteza},
   booktitle={IGARSS 2023 - 2023 IEEE International Geoscience and Remote Sensing Symposium}, 
   title={Comparison of Cross-Entropy, Dice, and Focal Loss for Sea Ice Type Segmentation}, 
   year={2023},
@@ -55,7 +55,7 @@ The `bibtex` entry for the publications above is listed below:
 
 ```bibtex
 @INPROCEEDINGS{tl_sea_ice_2023,
-  author={Karimzadeh, Morteza and de Lima, Rafael Pires},
+  author={Karimzadeh, Morteza and Pires de Lima, Rafael},
   booktitle={IGARSS 2023 - 2023 IEEE International Geoscience and Remote Sensing Symposium}, 
   title={Deep Learning on SAR Imagery: Transfer Learning Versus Randomly Initialized Weights}, 
   year={2023},
